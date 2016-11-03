@@ -14,7 +14,7 @@ extension LoginController: UIImagePickerControllerDelegate,
     
     
     func handleRegister() {
-        guard let email = emailTextField.text, let password = passwordTextField.text, let name = nameTextField.text else {
+        guard let email = emailTextField.text,  let password = passwordTextField.text, let name = nameTextField.text else {
             print("Form is not valid")
             return
         }
@@ -31,9 +31,8 @@ extension LoginController: UIImagePickerControllerDelegate,
                                         return
                                     }
                                     //successfully authenticated user
-                                    
-                let storageRef = FIRStorage.storage().reference().child("myImage.png")
-                            
+                        let imageName = NSUUID().uuidString
+                let storageRef = FIRStorage.storage().reference().child("profile_images").child("(imageName).png")
                 if let uploadData = UIImagePNGRepresentation(self.profileImageView.image!) {
                                         
                                     
@@ -43,37 +42,34 @@ extension LoginController: UIImagePickerControllerDelegate,
                             print(error)
                                 return
                             }
-                            print(metadata)
+                           
+                            if let profileImageUrl =  metadata?.downloadURL()?.absoluteString {
+                            
+                                
+                            let values = ["name": name, "email": email, "profileImageUrl": profileImageUrl]
+                                
+    // Image Storage Firebase
+                                self.registerUserIntoDatabaseWithUID(uid: uid, values: values as [String : AnyObject])
+                            }
                     })
+                  }
+            })
+    }
+    
+    
+  private func registerUserIntoDatabaseWithUID(uid: String, values: [String: AnyObject]) {
+        let ref = FIRDatabase.database().reference(fromURL: "https://chatapp-9cd47.firebaseio.com/" )
+        let usersReference = ref.child("users").child(uid)
+        
+    
+        usersReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
+            if err != nil {
+                print (err)
+                return
             }
-                    
-                                    
-                    let ref = FIRDatabase.database().reference(fromURL: "https://chatapp-9cd47.firebaseio.com/" )
-                    let usersReference = ref.child("user").child(uid)
-                                    
-                        let values = ["name": name, "email": email]
-                                    
-                            usersReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
-                                if err != nil {
-                                    print (err)
-                                        return
-                                        }
-                                        
-                                        self.dismiss(animated: true, completion: nil)
-                                    })
-                                    
-        })
-    }
-    
-    
-    private func registerUserIntoDatabase() {
-        
-        
-        
-        
-        
-        
-    }
+            
+            self.dismiss(animated: true, completion: nil)
+        })    }
     
     func handleSelectProfileImageView() {
     let picker = UIImagePickerController()
