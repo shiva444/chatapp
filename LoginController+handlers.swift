@@ -32,8 +32,14 @@ extension LoginController: UIImagePickerControllerDelegate,
                                     }
                                     //successfully authenticated user
                         let imageName = NSUUID().uuidString
-                let storageRef = FIRStorage.storage().reference().child("profile_images").child("(imageName).png")
-                if let uploadData = UIImagePNGRepresentation(self.profileImageView.image!) {
+                
+                        let storageRef = FIRStorage.storage().reference().child("profile_images").child("(imageName).jpg")
+                           
+                                    if let profileImageView = self.profileImageView.image, let uploadData = UIImageJPEGRepresentation(profileImageView, 0.1 ) {
+                
+                        
+                
+                    //if let uploadData = UIImagePNGRepresentation(self.profileImageView.image!) {
                                         
                                     
                 storageRef.put(uploadData, metadata: nil, completion:
@@ -48,7 +54,7 @@ extension LoginController: UIImagePickerControllerDelegate,
                                 
                             let values = ["name": name, "email": email, "profileImageUrl": profileImageUrl]
                                 
-    // Image Storage Firebase
+                                    // Image Storage Firebase
                                 self.registerUserIntoDatabaseWithUID(uid: uid, values: values as [String : AnyObject])
                             }
                     })
@@ -67,7 +73,8 @@ extension LoginController: UIImagePickerControllerDelegate,
                 print (err)
                 return
             }
-            
+   //         self.messagesController?.fetchUserAndSetupNavBarTitle()
+            self.messagesController?.navigationItem.title = values["name"] as? String
             self.dismiss(animated: true, completion: nil)
         })    }
     
@@ -82,7 +89,6 @@ extension LoginController: UIImagePickerControllerDelegate,
     
     
    func imagePickerController(_ _picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-    
     var selectedImageFromPicker: UIImage?
     
     if let edittedImage = info["UIImagePickerControllerEdittedImage"]

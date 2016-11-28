@@ -61,41 +61,66 @@ class NewMessageController: UITableViewController {
 }
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-       // let cell = UITableViewCell(style: .subtitle, reuseIdentifier:cellId)
-        
-        
-       let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath as IndexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellId, for: indexPath as IndexPath )as! UserCell
         let user = users[indexPath.row]
         cell.textLabel?.text = user.name
         cell.detailTextLabel?.text = user.email
         
-        cell.imageView?.image = UIImage(named: "tim_cook.jpg")
+        cell.imageView?.image = UIImage(named: "job.png")
         cell.imageView?.contentMode = .scaleAspectFill
         
-        if let profileImageUrl = user.profileImageUrl {
-       let url = NSURL(string: profileImageUrl)
-        URLSession.shared.dataTask(with: url! as URL,
-        completionHandler: { (data, response, error) in
         
-            if error != nil {
-                print(error)
-                return
-            }
-            DispatchQueue.main.async(execute: {
-            cell.imageView?.image = UIImage(data: data!)
-            })
-        }) .resume()
         
-        }
         return cell
 
+    }
+    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return 100
     }
 }
 
 
 class UserCell: UITableViewCell {
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        // user cell not showing 
+        
+       //textLabel?.frame = CGRectMake(56, textLabel!.frame.origin.y - 2, textLabel!.frame.width, textLabel!.frame.height)
+        
+        //detailTextLabel?.frame = CGRectMake(56, detailTextLabel!.frame.origin.y + 2, detailTextLabel!.frame.width, detailTextLabel!.frame.height)
+    }
+    
+    
+    
+    
+    
+    let profileImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "job.png")
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.layer.cornerRadius = 20
+        imageView.layer.masksToBounds = true
+        imageView.contentMode = .scaleAspectFill
+        
+        
+        return imageView
+        
+    }()
+    
+    
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
+        
+      addSubview(profileImageView)
+        
+        //iOS 10 constraints anchors
+        // need anchors
+        profileImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8).isActive = true
+        profileImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
+        profileImageView.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        profileImageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder!) has not been implemented")
